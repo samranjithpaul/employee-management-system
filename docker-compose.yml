@@ -1,0 +1,52 @@
+
+services:
+  db:
+    image: postgres:15
+    container_name: ems_db
+    environment:
+      POSTGRES_USER: admin
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: ems_db
+    ports:
+      - "5432:5432"
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql
+      - ./database/seed.sql:/docker-entrypoint-initdb.d/02-seed.sql
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U admin"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  api:
+    build: ./rust_api
+    container_name: ems_api
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgres://admin:password@db:5432/ems_db
+      RUST_LOG: info
+      RUST_BACKTRACE: 1
+    depends_on:
+      db:
+        condition: service_healthy
+    volumes:
+      - ./rust_api/uploads:/app/uploads
+    restart: unless-stopped
+
+  streamlit:
+    build: ./streamlit_app
+    container_name: ems_streamlit
+    ports:
+      - "8501:8501"
+    environment:
+      - BASE_URL=http://api:8000
+      - PUBLIC_API_URL=http://localhost:8000
+    depends_on:
+      - api
+    restart: unless-stopped
+
+volumes:
+  postgres_data:
+

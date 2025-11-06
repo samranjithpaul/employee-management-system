@@ -1,0 +1,50 @@
+# Environment variables
+.env
+.env.local
+*.env
+
+# Rust build artifacts
+target/
+Cargo.lock
+
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+*.egg-info/
+dist/
+build/
+.venv/
+venv/
+
+# Uploads and user-generated content
+**/uploads/
+**/exports/
+rust_api/uploads/
+streamlit_app/uploads/
+streamlit_app/exports/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Docker
+docker-compose.override.yml
+
+# Logs
+*.log
+logs/
+
+# Database dumps
+*.sql.backup
+*.dump
+
